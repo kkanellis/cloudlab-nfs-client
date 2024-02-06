@@ -9,15 +9,18 @@ pc = portal.Context()
 # Create a Request object to start building the RSpec.
 request = pc.makeRequestRSpec()
 
-# Number of NFS clients (there is always a server)
-pc.defineParameter("nodeCount", "Number of Nodes",
-                   portal.ParameterType.INTEGER, 1)
-
 # Only Ubuntu images supported.
 imageList = [
     ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU22-64-STD', 'UBUNTU 22.04'),
     ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU20-64-STD', 'UBUNTU 20.04'),
 ]
+
+# Do not change these unless you change the setup NFS script too. 
+nfsLanName= "nfsLan"
+
+# Number of NFS clients (there is always a server)
+pc.defineParameter("nodeCount", "Number of Nodes",
+                   portal.ParameterType.INTEGER, 1)
 
 pc.defineParameter("osImage", "Select OS image",
                    portal.ParameterType.IMAGE,
