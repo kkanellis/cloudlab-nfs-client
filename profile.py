@@ -20,30 +20,31 @@ nfsLanName= "nfsLan"
 
 # Number of NFS clients (there is always a server)
 pc.defineParameter("nodeCount", "Number of Nodes",
-                   portal.ParameterType.INTEGER, 1)
+    portal.ParameterType.INTEGER, 1)
 
 pc.defineParameter("osImage", "Select OS image",
-                   portal.ParameterType.IMAGE,
-                   imageList[0], imageList)
+    portal.ParameterType.IMAGE,
+    imageList[0], imageList)
 
 # Optional physical type for all nodes.
 pc.defineParameter("phystype", "Optional physical node type",
-                   portal.ParameterType.STRING, "",
-                   longDescription="Specify a single physical node type (pc3000,d710,etc) " +
-                   "instead of letting the resource mapper choose for you.")
+    portal.ParameterType.STRING, "",
+    longDescription="Specify a single physical node type (pc3000,d710,etc) " +
+                    "instead of letting the resource mapper choose for you.")
 
 # Shared VLAN params
-pc.defineParameter(
-    "sharedVlanName", "Shared VLAN Name",
+pc.defineParameter("sharedVlanName", "Shared VLAN Name",
     portal.ParameterType.STRING,"kkanellis-nfs-tiering",
     advanced=True,
-    longDescription="A shared VLAN name (functions as a private key allowing other experiments to connect to this node/VLAN). Must be fewer than 32 alphanumeric characters."),
+    longDescription="A shared VLAN name (functions as a private key allowing other experiments to connect to this node/VLAN). "
+                    "Must be fewer than 32 alphanumeric characters."),
 
 pc.defineParameter(
     "sharedVlanAddress", "Shared VLAN IP Address",
     portal.ParameterType.STRING, "10.254.254.1",
     advanced=True,
-    longDescription="Set the IP address for the shared VLAN interface.  Make sure to use an unused address within the subnet of an existing shared vlan!"),
+    longDescription="Set the IP address for the shared VLAN interface.  "
+                    "Make sure to use an unused address within the subnet of an existing shared vlan!"),
 
 pc.defineParameter(
     "sharedVlanNetmask", "Shared VLAN Netmask",
@@ -64,9 +65,9 @@ pc.verifyParameters()
 
 # The NFS network. All these options are required.
 nfsLan = request.LAN(nfsLanName)
-nfsLan.best_effort = True
-nfsLan.vlan_tagging = True
-nfsLan.link_multiplexing = True
+#nfsLan.best_effort = True
+#nfsLan.vlan_tagging = True
+#nfsLan.link_multiplexing = True
 
 # Create nodes and attached to the NFS lan.
 for i in range(params.nodeCount):
