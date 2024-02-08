@@ -1,3 +1,9 @@
+"""
+NFS client connecting to an NFS server (running on a different experiment),
+using a shared VLAN (created by the NFS server experiment).
+"""
+
+import ipaddress
 
 import geni.portal as portal
 import geni.rspec.pg as pg
@@ -16,7 +22,7 @@ imageList = [
 ]
 
 # Do not change these unless you change the setup NFS script too. 
-nfsLanName= "nfsLan"
+nfsLanName = "nfsLan"
 
 # Number of NFS clients (there is always a server)
 pc.defineParameter("nodeCount", "Number of Nodes",
@@ -37,21 +43,12 @@ pc.defineParameter("sharedVlanName", "Shared VLAN Name",
     portal.ParameterType.STRING,"kkanellis-nfs-tiering",
     advanced=True,
     longDescription="A shared VLAN name (functions as a private key allowing other experiments to connect to this node/VLAN). "
-                    "Must be fewer than 32 alphanumeric characters."),
+                    "Must be fewer than 32 alphanumeric characters.")
 
-pc.defineParameter(
-    "sharedVlanAddress", "Shared VLAN IP Address",
-    portal.ParameterType.STRING, "10.254.254.1",
+pc.defineParameter("sharedVlanNetwork", "Shared VLAN Network",
+    portal.ParameterType.STRING, "10.254.254.0/24",
     advanced=True,
-    longDescription="Set the IP address for the shared VLAN interface.  "
-                    "Make sure to use an unused address within the subnet of an existing shared vlan!"),
-
-pc.defineParameter(
-    "sharedVlanNetmask", "Shared VLAN Netmask",
-    portal.ParameterType.STRING, "255.255.255.0",
-    advanced=True,
-    longDescription="Set the subnet mask for the shared VLAN interface, as a dotted quad.")
-
+    longDescription="Set the shared VLAN network, as a CIDR.")
 
 # Always need this when using parameters
 params = pc.bindParameters()
@@ -63,11 +60,14 @@ if params.phystype != "":
 
 pc.verifyParameters()
 
+# Represent given network
+network = ipaddress.IPv4Network(unicode(params.sharedVlanNetwork))
+netmask = network.netmask
+hosts = network.hosts()
+gateway = next(hosts)
+
 # The NFS network. All these options are required.
 nfsLan = request.LAN(nfsLanName)
-#nfsLan.best_effort = True
-#nfsLan.vlan_tagging = True
-#nfsLan.link_multiplexing = True
 
 # Create nodes and attached to the NFS lan.
 for i in range(params.nodeCount):
@@ -78,7 +78,7 @@ for i in range(params.nodeCount):
     # Setup the client to use the shared VLAN
     iface = node.addInterface()
     iface.addAddress(
-        pg.IPv4Address(params.sharedVlanAddress, params.sharedVlanNetmask))
+        pg.IPv4Address(next(hosts).compressed, netmask.compressed))
 
     nfsLan.addInterface(iface)
     nfsLan.connectSharedVlan(params.sharedVlanName)

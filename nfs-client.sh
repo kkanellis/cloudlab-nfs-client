@@ -38,8 +38,8 @@ NFSSERVER="nfs-$NFSNETNAME"
 HOOKNAME="$BINDIR/prepare.pre.d/nfs-client.sh"
 
 if ! (grep -q $NFSSERVER /etc/hosts); then
-    echo "$NFSSERVER is not in /etc/hosts"
-    exit 1
+    # Add nfs node entry to hosts
+    echo "10.254.254.1\t$NFSSERVER nfs-0 nfs" | tee -a /etc/hosts
 fi
 
 #
