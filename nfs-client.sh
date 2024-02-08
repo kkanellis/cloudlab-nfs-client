@@ -39,7 +39,7 @@ HOOKNAME="$BINDIR/prepare.pre.d/nfs-client.sh"
 
 if ! (grep -q $NFSSERVER /etc/hosts); then
     # Add nfs node entry to hosts
-    echo "10.254.254.1\t$NFSSERVER nfs-0 nfs" | tee -a /etc/hosts
+    printf "10.254.254.1\t$NFSSERVER nfs-0 nfs\n" | tee -a /etc/hosts
 fi
 
 #
